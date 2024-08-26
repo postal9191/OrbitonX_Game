@@ -1,8 +1,7 @@
-
 import requests
 import json
 import time
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 
 # Ваш токен пример 'eyJhbGciOaSfgG1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MjI2........'
 token = ''
@@ -122,7 +121,7 @@ while True:
         wait_time = (utc_time - current_time).total_seconds() + 5 * 60
 
         if wait_time > 0:
-            print(f"Ожидание {wait_time} секунд до времени {utc_time} UTC")
+            print(f"Следующий сбор в {utc_time.astimezone()}")
             time.sleep(wait_time)
             continue  # Переход к началу нового цикла после ожидания
         else:
@@ -130,5 +129,5 @@ while True:
 
     # Если данных не было или они не дата, выполняем основной код
     api_coin_patch()
-    print('Ждем чуть более 4-х Часов')
+    print(f"Следующий сбор в {datetime.now() + timedelta(hours=4, minutes=5)}")
     time.sleep(3600 * 4 + 300)  # Ожидание 4 часа и 5 минут перед следующей итерацией
