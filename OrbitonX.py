@@ -51,7 +51,6 @@ def api_claim_get_coin():
 
 
 
-# print(collectReward.text)
 def api_coin_patch():
     coins_ids = api_claim_get_coin()
 
