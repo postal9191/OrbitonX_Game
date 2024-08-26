@@ -39,7 +39,6 @@ def api_claim_get_coin():
 
     if active_portfolios:
         coins_ids = [coin["id"] for coin in active_portfolios[0]["coins"]]
-        print(coins_ids)
         return coins_ids
 
     # Если нет активных портфелей, возвращаем finishStaking для неактивных портфелей
@@ -47,10 +46,7 @@ def api_claim_get_coin():
 
     if inactive_portfolios:
         finish_staking_dates = [p["finishStaking"] for p in inactive_portfolios]
-        print(finish_staking_dates)
         return finish_staking_dates
-
-    print("Нет портфелей.")
     return []
 
 
