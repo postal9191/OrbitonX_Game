@@ -3,8 +3,12 @@ import json
 import time
 from datetime import datetime, timezone, timedelta
 
-# Ваш токен пример 'eyJhbGciOaSfgG1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MjI2........'
-token = ''
+# Открываем файл и загружаем данные
+with open('config.json', 'r') as file:
+    config = json.load(file)
+
+# Извлекаем токен
+token = config['token']
 
 def api_claim_get_coin():
     url = "https://api.orbitonx.com/api/user-coins/collect-reward"
