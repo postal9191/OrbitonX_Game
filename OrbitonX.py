@@ -1,3 +1,5 @@
+import sys
+
 import requests
 import json
 import time
@@ -33,6 +35,10 @@ def api_claim_get_coin():
 
     response = requests.request("PATCH", url, headers=headers)
     data = response.json()
+    print(data)
+    if data.get('statusCode') == 401 and data.get('message') == 'Unauthorized':
+        print("Неавторизованный доступ. Завершение программы.")
+        sys.exit(1)
 
     # Проверка на активные портфели и получение ID монет
     active_portfolios = [p for p in data["data"]["quest"]["portfolios"] if p["active"]]
