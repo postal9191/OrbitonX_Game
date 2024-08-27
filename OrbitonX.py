@@ -6,13 +6,45 @@ import time
 from datetime import datetime, timezone, timedelta
 
 # Открываем файл и загружаем данные
-with open('config.json', 'r') as file:
-    config = json.load(file)
+with open('config.json', 'r', encoding='utf-8') as json_file:
+    loaded_data = json.load(json_file)
+current_timestamp = int(time.time())
+# Обновление поля "auth_date" на текущее время в формате Unix Timestamp
+current_timestamp = int(time.time())
+loaded_data['webAppInitData']['auth_date'] = str(current_timestamp)
 
-# Извлекаем токен
-token = config['token']
 
-def api_claim_get_coin():
+def token_regen():
+    import requests
+    import json
+
+    url = "https://api.orbitonx.com/api/auth"
+
+    payload = json.dumps(loaded_data)
+    headers = {
+        'accept': 'application/json, text/plain, */*',
+        'accept-language': 'ru,en;q=0.9,en-GB;q=0.8,en-US;q=0.7',
+        'authorization': 'Bearer null',
+        'content-type': 'application/json',
+        'origin': 'https://game.orbitonx.com',
+        'priority': 'u=1, i',
+        'referer': 'https://game.orbitonx.com/',
+        'sec-ch-ua': '"Not)A;Brand";v="99", "Microsoft Edge";v="127", "Chromium";v="127", "Microsoft Edge WebView2";v="127"',
+        'sec-ch-ua-mobile': '?0',
+        'sec-ch-ua-platform': '"Windows"',
+        'sec-fetch-dest': 'empty',
+        'sec-fetch-mode': 'cors',
+        'sec-fetch-site': 'same-site',
+        'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36 Edg/127.0.0.0',
+        'x-request-id': 'q9906',
+        'x-timezone': 'Europe/Moscow'
+    }
+
+    response = requests.request("POST", url, headers=headers, data=payload).json()
+    token = response['data']['token']
+    return token
+
+def api_claim_get_coin(token):
     url = "https://api.orbitonx.com/api/user-coins/collect-reward"
 
     headers = {
@@ -35,7 +67,6 @@ def api_claim_get_coin():
 
     response = requests.request("PATCH", url, headers=headers)
     data = response.json()
-    print(data)
     if data.get('statusCode') == 401 and data.get('message') == 'Unauthorized':
         print("Неавторизованный доступ. Завершение программы.")
         sys.exit(1)
@@ -57,7 +88,7 @@ def api_claim_get_coin():
 
 
 
-def api_coin_patch():
+def api_coin_patch(token):
     coins_ids = api_claim_get_coin()
 
     url = "https://api.orbitonx.com/api/user-coins"
@@ -106,7 +137,6 @@ def api_coin_patch():
     }
 
     response = requests.request("PATCH", url, headers=headers, data=payload)
-    print(response)
 
 
 def is_date(value):
@@ -118,7 +148,8 @@ def is_date(value):
 
 
 while True:
-    response = api_claim_get_coin()
+    token = token_regen()
+    response = api_claim_get_coin(token)
 
     if isinstance(response, list) and len(response) > 0 and is_date(response[0]):
         utc_time = datetime.fromisoformat(response[0].replace('Z', '+00:00'))
@@ -133,6 +164,6 @@ while True:
             print("Время уже прошло, переход к следующей итерации")
 
     # Если данных не было или они не дата, выполняем основной код
-    api_coin_patch()
+    api_coin_patch(token)
     print(f"Следующий сбор в {datetime.now() + timedelta(hours=4, minutes=5)}")
     time.sleep(3600 * 4 + 300)  # Ожидание 4 часа и 5 минут перед следующей итерацией
