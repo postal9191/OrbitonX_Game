@@ -4,6 +4,14 @@ import requests
 import json
 import time
 from datetime import datetime, timezone, timedelta
+from Crypto.Cipher import AES
+from Crypto.Util.Padding import unpad
+import base64
+import binascii
+
+# Задаем ключ шифрования, аналогичный V7 в JavaScript (должен быть 16, 24 или 32 байта)
+KEY = "kasdfrfsddf3234234123asdfghjkl12".encode('utf-8')
+
 
 # Открываем файл и загружаем данные
 with open('config.json', 'r', encoding='utf-8') as json_file:
@@ -12,7 +20,6 @@ current_timestamp = int(time.time())
 # Обновление поля "auth_date" на текущее время в формате Unix Timestamp
 current_timestamp = int(time.time())
 loaded_data['webAppInitData']['auth_date'] = str(current_timestamp)
-
 
 def token_regen():
 
@@ -41,6 +48,24 @@ def token_regen():
     response = requests.request("POST", url, headers=headers, data=payload).json()
     token = response['data']['token']
     return token
+
+
+def decrypt_token(encrypted_token):
+    # Разделение токена на зашифрованную часть и вектор инициализации (IV)
+    encrypted_data, iv_hex = encrypted_token.split(':')
+
+    # Декодирование Base64 зашифрованного токена и преобразование IV из Hex
+    encrypted_bytes = base64.b64decode(encrypted_data)
+    iv = binascii.unhexlify(iv_hex)
+
+    # Инициализация AES-шифра с использованием ключа и IV
+    cipher = AES.new(KEY, AES.MODE_CBC, iv)
+
+    # Расшифровка данных и удаление паддинга
+    decrypted_data = unpad(cipher.decrypt(encrypted_bytes), AES.block_size)
+
+    # Преобразование байтов в строку UTF-8
+    return decrypted_data.decode('utf-8')
 
 def api_claim_get_coin(token):
     url = "https://api.orbitonx.com/api/user-coins/collect-reward"
@@ -144,10 +169,7 @@ def is_date(value):
         return False
 
 
-while True:
-    token = token_regen()
-    response = api_claim_get_coin(token)
-
+def check_craft(response):
     if isinstance(response, list) and len(response) > 0 and is_date(response[0]):
         utc_time = datetime.fromisoformat(response[0].replace('Z', '+00:00'))
         current_time = datetime.now(timezone.utc)  # Приводим текущее время к UTC с временной зоной
@@ -156,9 +178,19 @@ while True:
         if wait_time > 0:
             print(f"Следующий сбор в {utc_time.astimezone()}")
             time.sleep(wait_time)
-            continue  # Переход к началу нового цикла после ожидания
+            return True  # Возвращаем True, чтобы пропустить итерацию
+            # continue  # Переход к началу нового цикла после ожидания
         else:
             print("Время уже прошло, переход к следующей итерации")
+    return False  # Продолжаем выполнение основного кода
+
+while True:
+    encrypted_token = token_regen()
+    token = decrypt_token(encrypted_token)
+    response = api_claim_get_coin(token)
+
+    if check_craft(response):
+        continue
 
     # Если данных не было или они не дата, выполняем основной код
     api_coin_patch(token, response)
