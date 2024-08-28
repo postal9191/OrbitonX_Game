@@ -8,6 +8,7 @@ from datetime import datetime, timezone, timedelta
 # Открываем файл и загружаем данные
 with open('config.json', 'r', encoding='utf-8') as json_file:
     loaded_data = json.load(json_file)
+    print(loaded_data)
 current_timestamp = int(time.time())
 # Обновление поля "auth_date" на текущее время в формате Unix Timestamp
 current_timestamp = int(time.time())
@@ -15,8 +16,6 @@ loaded_data['webAppInitData']['auth_date'] = str(current_timestamp)
 
 
 def token_regen():
-    import requests
-    import json
 
     url = "https://api.orbitonx.com/api/auth"
 
@@ -88,30 +87,29 @@ def api_claim_get_coin(token):
 
 
 
-def api_coin_patch(token):
-    coins_ids = api_claim_get_coin()
+def api_coin_patch(token, coin_id):
 
     url = "https://api.orbitonx.com/api/user-coins"
     payload = json.dumps({
         "coins": [
             {
-                "id": coins_ids[0],
+                "id": coin_id[0],
                 "progress": 100
             },
             {
-                "id": coins_ids[1],
+                "id": coin_id[1],
                 "progress": 100
             },
             {
-                "id": coins_ids[2],
+                "id": coin_id[2],
                 "progress": 100
             },
             {
-                "id": coins_ids[3],
+                "id": coin_id[3],
                 "progress": 100
             },
             {
-                "id": coins_ids[4],
+                "id": coin_id[4],
                 "progress": 100
             }
         ],
@@ -136,7 +134,7 @@ def api_coin_patch(token):
         'x-timezone': 'Europe/Moscow'
     }
 
-    response = requests.request("PATCH", url, headers=headers, data=payload)
+    coin_id = requests.request("PATCH", url, headers=headers, data=payload)
 
 
 def is_date(value):
@@ -164,6 +162,6 @@ while True:
             print("Время уже прошло, переход к следующей итерации")
 
     # Если данных не было или они не дата, выполняем основной код
-    api_coin_patch(token)
+    api_coin_patch(token, response)
     print(f"Следующий сбор в {datetime.now() + timedelta(hours=4, minutes=5)}")
     time.sleep(3600 * 4 + 300)  # Ожидание 4 часа и 5 минут перед следующей итерацией
