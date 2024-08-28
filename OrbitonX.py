@@ -8,7 +8,6 @@ from datetime import datetime, timezone, timedelta
 # Открываем файл и загружаем данные
 with open('config.json', 'r', encoding='utf-8') as json_file:
     loaded_data = json.load(json_file)
-    print(loaded_data)
 current_timestamp = int(time.time())
 # Обновление поля "auth_date" на текущее время в формате Unix Timestamp
 current_timestamp = int(time.time())
