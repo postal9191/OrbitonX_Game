@@ -4,3 +4,6 @@
 
 config заменить на свой после входа в игру в запросе 
 https://api.orbitonx.com/api/auth достать передаваемый json для отправки и заменить
+
+нужно подтянуть зависимость 
+pip install -r requirements.txt
