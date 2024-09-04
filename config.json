@@ -1,27 +1,58 @@
 {
-    "tgChatId": 213231,
-    "webAppInitData": {
+  "authData": [
+    {
+      "tgChatId": 2313,
+      "webAppInitData": {
         "user": {
-            "id": 21321,
-            "first_name": "фывфыпа",
-            "last_name": "",
-            "username": "фыпфып",
-            "language_code": "ru",
-            "is_premium": true,
-            "allows_write_to_pm": true
+          "id": 123,
+          "first_name": "Алексей",
+          "last_name": "Иванов",
+          "username": "alex_ivanov",
+          "language_code": "en",
+          "is_premium": false,
+          "allows_write_to_pm": false
         },
-        "chat_instance": "-4534273937791040840",
+        "chat_instance": "234",
         "chat_type": "sender",
-        "auth_date": "1724788601",
-        "hash": "sadasdasd123412d12d"
+        "auth_date": "234243",
+        "hash": "42342"
+      },
+      "user": {
+        "id": 987654321,
+        "first_name": "Алексей",
+        "last_name": "Иванов",
+        "username": "alex_ivanov",
+        "language_code": "en",
+        "is_premium": false,
+        "allows_write_to_pm": false
+      }
     },
-    "user": {
-        "id": 213123,
-        "first_name": "sadas",
-        "last_name": "",
-        "username": "fsafasg",
-        "language_code": "ru",
-        "is_premium": true,
-        "allows_write_to_pm": true
+    {
+      "tgChatId": 987654321,
+      "webAppInitData": {
+        "user": {
+          "id": 432,
+          "first_name": "Алексей",
+          "last_name": "Иванов",
+          "username": "alex_ivanov",
+          "language_code": "en",
+          "is_premium": false,
+          "allows_write_to_pm": false
+        },
+        "chat_instance": "234",
+        "chat_type": "sender",
+        "auth_date": "234243",
+        "hash": "42342"
+      },
+      "user": {
+        "id": 987654321,
+        "first_name": "Алексей",
+        "last_name": "Иванов",
+        "username": "alex_ivanov",
+        "language_code": "en",
+        "is_premium": false,
+        "allows_write_to_pm": false
+      }
     }
+  ]
 }
